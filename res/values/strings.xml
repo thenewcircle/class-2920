@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Yamba</string>
+    <string name="action_settings">Settings</string>
+    
+    <!-- Status Activit -->
+    <string name="status">Status</string>
+    <string name="count">140</string>
+    <string name="hint">&#8230;enter your status here</string>
+    <string name="submit">Submit</string>
+    
+
+</resources>
