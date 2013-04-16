@@ -9,6 +9,7 @@
     <string name="count">140</string>
     <string name="hint">&#8230;enter your status here</string>
     <string name="submit">Submit</string>
-    
+    <string name="post_succeeded">Posted!</string>
+    <string name="post_failed">Post failed!</string>
 
 </resources>
