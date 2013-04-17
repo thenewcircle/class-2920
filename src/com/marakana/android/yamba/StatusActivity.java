@@ -21,8 +21,15 @@ public class StatusActivity extends Activity {
     private static final int WARN_CHAR_CNT = 10;
     private static final int ERROR_CHAR_CNT = 0;
 
+
     private TextView count;
     private EditText status;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +57,18 @@ public class StatusActivity extends Activity {
                 new View.OnClickListener() {
                     @Override public void onClick(View v) { post(); }
                 });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        YambaService.startPolling(this);
+    }
+
+    @Override
+    protected void onPause() {
+        YambaService.stopPolling(this);
+        super.onPause();
     }
 
     /**
@@ -82,13 +101,6 @@ public class StatusActivity extends Activity {
 
         status.setText("");
 
-        YambaService.post(StatusActivity.this, message);
-        YambaService.poll(StatusActivity.this);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+        YambaService.post(this, message);
     }
 }
