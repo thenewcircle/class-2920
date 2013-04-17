@@ -32,6 +32,11 @@
             </intent-filter>
         </receiver>
 
+        <provider
+            android:name=".svc.YambaProvider"
+            android:authorities="com.marakana.yamba.content"
+            android:exported="false" />
+
         <service android:name=".svc.YambaService" />
     </application>
 
