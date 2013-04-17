@@ -16,9 +16,6 @@ import android.util.Log;
 public class YambaService extends IntentService {
     private static final String TAG = "SVC";
 
-    /** Max results in one poll */
-    public static final int MAX_MESSAGES = 30;
-
     private static final String PARAM_OP = "YambaService.OP";
     private static final int OP_POST = 6001;
     private static final int OP_POLL = 6002;
@@ -38,17 +35,35 @@ public class YambaService extends IntentService {
         ctxt.startService(i);
     }
 
+    private static class SafeYambaClient {
+        public static final int MAX_MESSAGES = 30;
 
-    private YambaClient yamba;
+        private YambaClient yamba;
+
+        public synchronized List<Status> getTimeline() throws YambaClientException {
+            return getYambaClient().getTimeline(MAX_MESSAGES);
+        }
+
+        public synchronized void postStatus(String message) throws YambaClientException {
+            getYambaClient().postStatus(message);
+        }
+
+        private YambaClient getYambaClient() {
+            if (null == yamba) {
+                yamba = new YambaClient("student", "password", "http://yamba.marakana.com/api");
+            }
+            return yamba;
+        }
+    }
+
+    public SafeYambaClient yamba;
 
     public YambaService() { super(TAG); }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d(TAG, "onCreate thread: " + Thread.currentThread());
-
-        yamba = new YambaClient("student", "password", "http://yamba.marakana.com/api");
+        yamba = new SafeYambaClient();
     }
 
     @Override
@@ -70,17 +85,13 @@ public class YambaService extends IntentService {
 
     private void doPoll() {
         List<Status> timeline = null;
-        try { timeline = yamba.getTimeline(MAX_MESSAGES); }
+        try { timeline = yamba.getTimeline(); }
         catch (YambaClientException e) {
             Log.w(TAG, "post failed: ", e);
         }
 
         for (Status status: timeline) {
-            Log.d(TAG,
-                    "Status: " + status.getId()
-                    + ", " + status.getCreatedAt()
-                    + ", " + status.getUser()
-                    + ", " + status.getMessage());
+            Log.d(TAG, "Status: " + status.toString());
         }
     }
 

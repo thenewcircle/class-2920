@@ -6,10 +6,8 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -31,7 +29,7 @@ public class StatusActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_status);
 
-        count =  (TextView) findViewById(R.id.status_count);
+        count = (TextView) findViewById(R.id.status_count);
 
         status = (EditText) findViewById(R.id.status_status);
 
@@ -48,7 +46,7 @@ public class StatusActivity extends Activity {
                     }
                 } );
 
-        ((Button) findViewById(R.id.status_submit)).setOnClickListener(
+        findViewById(R.id.status_submit).setOnClickListener(
                 new View.OnClickListener() {
                     @Override public void onClick(View v) { post(); }
                 });
@@ -75,7 +73,7 @@ public class StatusActivity extends Activity {
     /**
      * Get the text from status EditText object
      * Clear the status
-     * post status to the network     *
+     * Post status to the network
      */
     void post() {
         final String message = status.getText().toString();
