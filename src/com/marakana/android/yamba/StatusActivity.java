@@ -78,8 +78,6 @@ public class StatusActivity extends Activity {
      * post status to the network     *
      */
     void post() {
-        Log.d(TAG, "Activity thread: " + Thread.currentThread());
-
         final String message = status.getText().toString();
 
         if (TextUtils.isEmpty(message)) { return; }
@@ -87,6 +85,7 @@ public class StatusActivity extends Activity {
         status.setText("");
 
         YambaService.post(StatusActivity.this, message);
+        YambaService.poll(StatusActivity.this);
     }
 
     @Override
