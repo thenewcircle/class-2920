@@ -21,7 +21,7 @@ import android.util.Log;
 public class YambaService extends IntentService {
     private static final String TAG = "SVC";
 
-    public static final long POLL_INTERVAL = 10 * 1000;
+    public static final long POLL_INTERVAL = 2 * 60 * 1000;
 
     private static final int POLLER_INTENT_TAG = 42;
 
