@@ -37,6 +37,10 @@ public class YambaProvider extends ContentProvider {
     }
 
     private static final ProjectionMap PROJ_MAP_TIMELINE = new ProjectionMap.Builder()
+        .addColumn(YambaContract.Timeline.Columns.ID, YambaDBHelper.COL_ID)
+        .addColumn(YambaContract.Timeline.Columns.TIMESTAMP, YambaDBHelper.COL_TIMESTAMP)
+        .addColumn(YambaContract.Timeline.Columns.USER, YambaDBHelper.COL_USER)
+        .addColumn(YambaContract.Timeline.Columns.STATUS, YambaDBHelper.COL_STATUS)
         .addColumn(YambaContract.Timeline.Columns.MAX_TIMESTAMP, "max(" + YambaDBHelper.COL_TIMESTAMP + ")")
         .build();
 

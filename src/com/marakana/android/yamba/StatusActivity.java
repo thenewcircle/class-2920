@@ -59,18 +59,6 @@ public class StatusActivity extends Activity {
                 });
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        YambaService.startPolling(this);
-    }
-
-    @Override
-    protected void onPause() {
-        YambaService.stopPolling(this);
-        super.onPause();
-    }
-
     /**
      * Set the number in the "count" text field to be 140
      * minus the number of characters in "status"

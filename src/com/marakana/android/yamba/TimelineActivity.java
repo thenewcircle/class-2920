@@ -1,5 +1,7 @@
 package com.marakana.android.yamba;
 
+import com.marakana.android.yamba.svc.YambaService;
+
 import android.os.Bundle;
 import android.app.ListActivity;
 import android.app.LoaderManager.LoaderCallbacks;
@@ -30,7 +32,6 @@ public class TimelineActivity extends ListActivity implements LoaderCallbacks<Cu
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.timeline, menu);
         return true;
     }
@@ -70,11 +71,23 @@ public class TimelineActivity extends ListActivity implements LoaderCallbacks<Cu
                 0);
         setListAdapter(adapter);
 
-        // get a cursor from the content provider.
+        // get a cursor from the content provider:
         //   -  init loader manager
         //   -  loader manager will ask Loader
         //   -  give it the loader: it will run it
-        //   -  loadermanager will give us the resulting cursor.
+        //   -  loader manager will give us the resulting cursor.
         getLoaderManager().initLoader(TIMELINE_LOADER, null, this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        YambaService.startPolling(this);
+    }
+
+    @Override
+    protected void onPause() {
+        YambaService.stopPolling(this);
+        super.onPause();
     }
 }
