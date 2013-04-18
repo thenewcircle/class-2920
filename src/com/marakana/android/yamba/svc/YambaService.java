@@ -14,6 +14,7 @@ import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -150,7 +151,6 @@ public class YambaService extends IntentService {
         return PendingIntent.getService(this, POLLER_INTENT_TAG, i, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
-
     // Find the timestamp for the most recent record in the database
     // Build a list of new records for the database, omitting any record that is already there
     // Use the list of database records to perform a bulk update on the database
@@ -168,17 +168,34 @@ public class YambaService extends IntentService {
             vals.put(YambaContract.Timeline.Columns.USER, status.getUser());
             vals.put(YambaContract.Timeline.Columns.STATUS, status.getMessage());
             update.add(vals);
-
-            Log.d(TAG, "Add status: " + vals);
         }
 
         if (0 < update.size()) {
-            // insert into database
+            int n = getContentResolver().bulkInsert(
+                    YambaContract.Timeline.URI,
+                    update.toArray(new ContentValues[update.size()]));
+            Log.d(TAG, n + " statuses inserted");
         }
     }
 
     // find the most recent timestamp in the database
+    // SQL: SELECT max_timestamp FROM uri;
     private long getMostRecentTimestamp() {
-        return Long.MIN_VALUE;
+        Cursor c = getContentResolver().query(
+                YambaContract.Timeline.URI,
+                new String[] { YambaContract.Timeline.Columns.MAX_TIMESTAMP },
+                null,
+                null,
+                null);
+
+        long t = Long.MIN_VALUE;
+        if (null != c) {
+            if (c.moveToNext()) { t = c.getLong(0); }
+            c.close();
+        }
+
+        Log.d(TAG, "latest record at time: " + t);
+
+        return t;
     }
 }

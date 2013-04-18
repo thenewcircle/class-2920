@@ -5,10 +5,13 @@ import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.os.Build;
 import android.util.Log;
 
 import com.marakana.android.yamba.BuildConfig;
+import com.marakana.android.yamba.YambaContract;
 
 
 /**
@@ -23,25 +26,49 @@ public class YambaProvider extends ContentProvider {
     private static final UriMatcher uriMatcher;
     static {
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+        uriMatcher.addURI(
+                YambaContract.AUTHORITY,
+                YambaContract.Timeline.TABLE,
+                TIMELINE_DIR);
+        uriMatcher.addURI(
+                YambaContract.AUTHORITY,
+                YambaContract.Timeline.TABLE + "/#",
+                TIMELINE_ITEM);
+        uriMatcher.addURI(
+                YambaContract.AUTHORITY,
+                YambaContract.Timeline.TABLE + "/#",
+                TIMELINE_ITEM);
+
     }
 
     private static final ProjectionMap PROJ_MAP_TIMELINE = new ProjectionMap.Builder()
-        .build();
+    .addColumn(YambaContract.Timeline.Columns.MAX_TIMESTAMP, "max(" + YambaDBHelper.COL_TIMESTAMP + ")")
+    .build();
 
     private static final ColumnMap COL_MAP_TIMELINE = new ColumnMap.Builder()
-        .build();
+    .addColumn(YambaContract.Timeline.Columns.TIMESTAMP, YambaDBHelper.COL_TIMESTAMP, ColumnMap.Type.LONG)
+    /// fill me in
+    .build();
 
 
     private YambaDBHelper dbHelper;
 
     @Override
     public boolean onCreate() {
-        return false;
+        dbHelper = new YambaDBHelper(getContext());
+        return null != dbHelper;
     }
 
     @Override
     public String getType(Uri uri) {
-        return null;
+        switch (uriMatcher.match(uri)) {
+            case TIMELINE_ITEM:
+                return YambaContract.Timeline.ITEM_TYPE;
+            case TIMELINE_DIR:
+                return YambaContract.Timeline.DIR_TYPE;
+            default:
+                throw new IllegalArgumentException("Unsupported URI: " + uri);
+        }
     }
 
     @Override
@@ -49,8 +76,6 @@ public class YambaProvider extends ContentProvider {
         if (BuildConfig.DEBUG) { Log.d(TAG, "query: " + uri); }
 
         switch (uriMatcher.match(uri)) {
-            case TIMELINE_ITEM:
-
             case TIMELINE_DIR:
                 break;
 
@@ -58,7 +83,18 @@ public class YambaProvider extends ContentProvider {
                 throw new IllegalArgumentException("URI unsupported in query: " + uri);
         }
 
-        return null;
+        SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            qb.setStrict(true);
+        }
+
+        qb.setProjectionMap(PROJ_MAP_TIMELINE.getProjectionMap());
+
+        qb.setTables(YambaDBHelper.TABLE_TIMELINE);
+
+        Cursor c = qb.query(getDb(), proj, sel, selArgs, null, null, sort);
+
+        return c;
     }
 
     @Override
@@ -78,7 +114,21 @@ public class YambaProvider extends ContentProvider {
                 throw new UnsupportedOperationException("URI unsupported in bulk insert: " + uri);
         }
 
-        return 0;
+        SQLiteDatabase db = getDb();
+
+        int count = 0;
+        try {
+            db.beginTransaction();
+            for (ContentValues val: vals) {
+                if (0 < db.insert(YambaDBHelper.TABLE_TIMELINE, null, COL_MAP_TIMELINE.translateCols(val))) {
+                    count++;
+                }
+            }
+            db.setTransactionSuccessful();
+        }
+        finally { db.endTransaction(); }
+
+        return count;
     }
 
     @Override
