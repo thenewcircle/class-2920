@@ -34,21 +34,18 @@ public class YambaProvider extends ContentProvider {
                 YambaContract.AUTHORITY,
                 YambaContract.Timeline.TABLE + "/#",
                 TIMELINE_ITEM);
-        uriMatcher.addURI(
-                YambaContract.AUTHORITY,
-                YambaContract.Timeline.TABLE + "/#",
-                TIMELINE_ITEM);
-
     }
 
     private static final ProjectionMap PROJ_MAP_TIMELINE = new ProjectionMap.Builder()
-    .addColumn(YambaContract.Timeline.Columns.MAX_TIMESTAMP, "max(" + YambaDBHelper.COL_TIMESTAMP + ")")
-    .build();
+        .addColumn(YambaContract.Timeline.Columns.MAX_TIMESTAMP, "max(" + YambaDBHelper.COL_TIMESTAMP + ")")
+        .build();
 
     private static final ColumnMap COL_MAP_TIMELINE = new ColumnMap.Builder()
-    .addColumn(YambaContract.Timeline.Columns.TIMESTAMP, YambaDBHelper.COL_TIMESTAMP, ColumnMap.Type.LONG)
-    /// fill me in
-    .build();
+        .addColumn(YambaContract.Timeline.Columns.ID, YambaDBHelper.COL_ID, ColumnMap.Type.LONG)
+        .addColumn(YambaContract.Timeline.Columns.TIMESTAMP, YambaDBHelper.COL_TIMESTAMP, ColumnMap.Type.LONG)
+        .addColumn(YambaContract.Timeline.Columns.USER, YambaDBHelper.COL_USER, ColumnMap.Type.STRING)
+        .addColumn(YambaContract.Timeline.Columns.STATUS, YambaDBHelper.COL_STATUS, ColumnMap.Type.STRING)
+        .build();
 
 
     private YambaDBHelper dbHelper;

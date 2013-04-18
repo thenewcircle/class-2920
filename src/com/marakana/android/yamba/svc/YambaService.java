@@ -181,21 +181,23 @@ public class YambaService extends IntentService {
     // find the most recent timestamp in the database
     // SQL: SELECT max_timestamp FROM uri;
     private long getMostRecentTimestamp() {
-        Cursor c = getContentResolver().query(
-                YambaContract.Timeline.URI,
-                new String[] { YambaContract.Timeline.Columns.MAX_TIMESTAMP },
-                null,
-                null,
-                null);
+        Cursor c = null;
+        try {
+            c = getContentResolver().query(
+                    YambaContract.Timeline.URI,
+                    new String[] { YambaContract.Timeline.Columns.MAX_TIMESTAMP },
+                    null,
+                    null,
+                    null);
 
-        long t = Long.MIN_VALUE;
-        if (null != c) {
-            if (c.moveToNext()) { t = c.getLong(0); }
-            c.close();
+            long t = ((null == c) || (!c.moveToNext())) ? Long.MIN_VALUE : c.getLong(0);
+
+            Log.d(TAG, "latest record at time: " + t);
+
+            return t;
         }
-
-        Log.d(TAG, "latest record at time: " + t);
-
-        return t;
+        finally {
+            if (null != c) { c.close(); }
+        }
     }
 }

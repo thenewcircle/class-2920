@@ -17,8 +17,12 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".StatusActivity"
+            android:name="com.marakana.android.yamba.StatusActivity"
             android:label="@string/app_name" >
+        </activity>
+        <activity
+            android:name="com.marakana.android.yamba.TimelineActivity"
+            android:label="@string/title_activity_timeline" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -26,18 +30,18 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".svc.BootReceiver" >
+        <receiver android:name="com.marakana.android.yamba.svc.BootReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
         <provider
-            android:name=".svc.YambaProvider"
+            android:name="com.marakana.android.yamba.svc.YambaProvider"
             android:authorities="com.marakana.yamba.content"
             android:exported="false" />
 
-        <service android:name=".svc.YambaService" />
+        <service android:name="com.marakana.android.yamba.svc.YambaService" />
     </application>
 
 </manifest>

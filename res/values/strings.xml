@@ -3,7 +3,7 @@
 
     <string name="app_name">Yamba</string>
     <string name="action_settings">Settings</string>
-    
+
     <!-- Status Activit -->
     <string name="status">Status</string>
     <string name="count">140</string>
@@ -11,5 +11,7 @@
     <string name="submit">Submit</string>
     <string name="post_succeeded">Posted!</string>
     <string name="post_failed">Post failed!</string>
+    <string name="title_activity_timeline">TimelineActivity</string>
+    <string name="hello_world">Hello world!</string>
 
 </resources>
