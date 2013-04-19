@@ -33,6 +33,7 @@ public class YambaService extends IntentService {
     private static final int OP_POLL_STOP = 6004;
 
     private static final String PARAM_STATUS = "YambaService.STATUS";
+    private static final String PARAM_XACT = "YambaService.XACT";
 
     private static class SafeYambaClient {
         public static final int MAX_MESSAGES = 30;
@@ -55,10 +56,11 @@ public class YambaService extends IntentService {
         }
     }
 
-    public static void post(Context ctxt, String status) {
+    public static void post(Context ctxt, String status, String xact) {
         Intent i = new Intent(ctxt, YambaService.class);
         i.putExtra(PARAM_OP, OP_POST);
         i.putExtra(PARAM_STATUS, status);
+        i.putExtra(PARAM_XACT, xact);
         ctxt.startService(i);
     }
 
@@ -90,7 +92,9 @@ public class YambaService extends IntentService {
         int op = intent.getIntExtra(PARAM_OP, 0);
         switch (op) {
         case OP_POST:
-            doPost(intent.getStringExtra(PARAM_STATUS));
+            doPost(
+                    intent.getStringExtra(PARAM_STATUS),
+                    intent.getStringExtra(PARAM_XACT));
             break;
 
         case OP_POLL:
@@ -120,13 +124,25 @@ public class YambaService extends IntentService {
         processTimeline(timeline);
     }
 
-    private void doPost(String message) {
-        if (TextUtils.isEmpty(message)) { return; }
-
-        try { yamba.postStatus(message); }
+    private void doPost(String message, String xact) {
+        ContentValues reply = new ContentValues();
+        try {
+            if (!TextUtils.isEmpty(message)) {
+                yamba.postStatus(message);
+                reply.put(YambaContract.Posts.Columns.TIMESTAMP, System.currentTimeMillis());
+            }
+        }
         catch (YambaClientException e) {
             Log.w(TAG, "post failed: ", e);
         }
+
+        reply.putNull(YambaContract.Posts.Columns.TRANSACTION);
+
+        getContentResolver().update(
+                YambaContract.Posts.URI,
+                reply,
+                YambaContract.Posts.Columns.TRANSACTION + "=?",
+                new String[] { xact });
     }
 
     private void doStartPolling() {

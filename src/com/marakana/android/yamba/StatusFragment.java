@@ -3,7 +3,10 @@ package com.marakana.android.yamba;
 import com.marakana.android.yamba.svc.YambaService;
 
 import android.app.Fragment;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -20,6 +23,32 @@ public class StatusFragment extends Fragment {
     private static final int MAX_STATUS_LEN = 140;
     private static final int WARN_CHAR_CNT = 10;
     private static final int ERROR_CHAR_CNT = 0;
+
+
+
+    private static class Poster extends AsyncTask<String, Void, Void> {
+        private ContentResolver resolver;
+
+        public Poster(ContentResolver resolver) { this.resolver = resolver; }
+
+        @Override
+        protected Void doInBackground(String... params) {
+            ContentValues status = new ContentValues();
+            status.put(YambaContract.Posts.Columns.STATUS, params[0]);
+            resolver.insert(YambaContract.Posts.URI, null);
+            return null;
+        }
+
+        @Override
+        protected void onCancelled(Void result) { cleanup(); }
+
+        @Override
+        protected void onPostExecute(Void result) { cleanup(); }
+
+        private void cleanup() { poster = null; }
+    }
+
+    private static Poster poster;
 
 
     private TextView count;
@@ -78,12 +107,15 @@ public class StatusFragment extends Fragment {
      * Post status to the network
      */
     void post() {
+        if (null != poster)  { return; }
+
         final String message = status.getText().toString();
 
         if (TextUtils.isEmpty(message)) { return; }
 
         status.setText("");
 
-        YambaService.post(getActivity(), message);
+        poster = new Poster(getActivity().getContentResolver());
+        poster.execute(message);
     }
 }

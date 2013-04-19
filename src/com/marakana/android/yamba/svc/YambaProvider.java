@@ -1,5 +1,7 @@
 package com.marakana.android.yamba.svc;
 
+import java.util.UUID;
+
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -23,6 +25,7 @@ public class YambaProvider extends ContentProvider {
 
     private static final int TIMELINE_DIR = 1;
     private static final int TIMELINE_ITEM = 2;
+    private static final int POST_DIR = 3;
 
     private static final UriMatcher uriMatcher;
     static {
@@ -35,6 +38,10 @@ public class YambaProvider extends ContentProvider {
                 YambaContract.AUTHORITY,
                 YambaContract.Timeline.TABLE + "/#",
                 TIMELINE_ITEM);
+        uriMatcher.addURI(
+                YambaContract.AUTHORITY,
+                YambaContract.Posts.TABLE,
+                POST_DIR);
     }
 
     private static final ProjectionMap PROJ_MAP_TIMELINE = new ProjectionMap.Builder()
@@ -50,6 +57,12 @@ public class YambaProvider extends ContentProvider {
         .addColumn(YambaContract.Timeline.Columns.TIMESTAMP, YambaDBHelper.COL_TIMESTAMP, ColumnMap.Type.LONG)
         .addColumn(YambaContract.Timeline.Columns.USER, YambaDBHelper.COL_USER, ColumnMap.Type.STRING)
         .addColumn(YambaContract.Timeline.Columns.STATUS, YambaDBHelper.COL_STATUS, ColumnMap.Type.STRING)
+        .build();
+
+    private static final ColumnMap COL_MAP_POSTS = new ColumnMap.Builder()
+        .addColumn(YambaContract.Posts.Columns.TIMESTAMP, YambaDBHelper.COL_TIMESTAMP, ColumnMap.Type.LONG)
+        .addColumn(YambaContract.Posts.Columns.TRANSACTION, YambaDBHelper.COL_USER, ColumnMap.Type.STRING)
+        .addColumn(YambaContract.Posts.Columns.STATUS, YambaDBHelper.COL_STATUS, ColumnMap.Type.STRING)
         .build();
 
 
@@ -108,11 +121,6 @@ public class YambaProvider extends ContentProvider {
     }
 
     @Override
-    public Uri insert(Uri uri, ContentValues vals) {
-        throw new IllegalArgumentException("Unsupported operation: insert");
-    }
-
-    @Override
     public int bulkInsert(Uri uri, ContentValues[] vals) {
         if (BuildConfig.DEBUG) { Log.d(TAG, "bulk insert: " + uri); }
 
@@ -138,15 +146,51 @@ public class YambaProvider extends ContentProvider {
         }
         finally { db.endTransaction(); }
 
-
         if (0 < count) { getContext().getContentResolver().notifyChange(uri, null); }
 
         return count;
     }
 
     @Override
+    public Uri insert(Uri uri, ContentValues vals) {
+        if (BuildConfig.DEBUG) { Log.d(TAG, "insert: " + uri); }
+
+        switch (uriMatcher.match(uri)) {
+            case POST_DIR:
+                break;
+
+            default:
+                throw new UnsupportedOperationException("URI unsupported in bulk insert: " + uri);
+        }
+
+        doPost(vals);
+
+        long pk = getDb().insertOrThrow(YambaDBHelper.TABLE_POSTS, null, COL_MAP_POSTS.translateCols(vals));
+        if (0 >= pk) { return null; }
+
+        uri = uri.buildUpon().appendPath(String.valueOf(pk)).build();
+
+        getContext().getContentResolver().notifyChange(uri, null);
+
+        return uri;
+    }
+    @Override
     public int update(Uri uri, ContentValues vals, String where, String[] whereArgs) {
-        throw new IllegalArgumentException("Unsupported operation: insert");
+        if (BuildConfig.DEBUG) { Log.d(TAG, "insert: " + uri); }
+
+        switch (uriMatcher.match(uri)) {
+            case POST_DIR:
+                break;
+
+            default:
+                throw new UnsupportedOperationException("URI unsupported in bulk insert: " + uri);
+        }
+
+        int n = getDb().update(YambaDBHelper.TABLE_POSTS, vals, where, whereArgs);
+
+        if (0 < n)  { getContext().getContentResolver().notifyChange(uri, null); }
+
+        return n;
     }
 
     @Override
@@ -155,4 +199,10 @@ public class YambaProvider extends ContentProvider {
     }
 
     private SQLiteDatabase getDb() { return dbHelper.getWritableDatabase(); }
+
+    private void doPost(ContentValues vals) {
+        String xactId = UUID.randomUUID().toString();
+        String status = vals.getAsString(YambaContract.Posts.Columns.STATUS);
+        YambaService.post(getContext(), status, xactId);
+    }
 }
