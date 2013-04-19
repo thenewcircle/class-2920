@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
-            android:text="@string/status" />
+            android:text="@string/title_status" />
 
         <TextView
             android:id="@+id/status_count"

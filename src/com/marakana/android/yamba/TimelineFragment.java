@@ -110,6 +110,7 @@ public class TimelineFragment extends ListFragment  implements LoaderCallbacks<C
         String details = c.getString(c.getColumnIndex(YambaContract.Timeline.Columns.STATUS));
         Log.d(TAG, "details: " + details);
         Intent i = new Intent(getActivity(), TimelineDetailActivity.class);
+        i.putExtra(TimelineDetailFragment.PARAM_DETAILS, details);
         i.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(i);
     }

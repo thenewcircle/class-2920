@@ -19,7 +19,7 @@ public class TimelineActivity extends YambaActivity {
     @Override
     public void startActivityFromFragment(Fragment fragment, Intent intent, int requestCode, Bundle options) {
         if (!usingFrags) { startActivity(intent); }
-        else { launchDetails(); }
+        else { launchDetails(intent.getStringExtra(TimelineDetailFragment.PARAM_DETAILS)); }
     }
 
     @Override

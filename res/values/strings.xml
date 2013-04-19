@@ -4,8 +4,14 @@
     <string name="app_name">Yamba</string>
     <string name="action_settings">Settings</string>    
 
+    <!-- Action Bar -->
+    <string name="action_timeline">Timeline</string>
+    <string name="action_status">Status</string>
+    <string name="action_about">About</string>
+    <string name="about">Yamba!\n  From the folks at Marakana\n  Open Source Rules OK!</string>
+    
     <!-- Status Activity -->
-    <string name="status">Status</string>
+    <string name="title_status">Status</string>
     <string name="count">140</string>
     <string name="hint">&#8230;enter your status here</string>
     <string name="submit">Submit</string>
@@ -16,10 +22,7 @@
     <string name="title_timeline">TimelineActivity</string>
     <string name="hello_world">Hello world!</string>
 
-    <!-- Action Bar -->
-    <string name="action_timeline">Timeline</string>
-    <string name="action_status">Status</string>
-    <string name="action_about">About</string>
-    <string name="about">Yamba!\n  From the folks at Marakana\n  Open Source Rules OK!</string>
+    <!-- Detial Activity -->
+    <string name="title_detail">Detail</string>
     
 </resources>
