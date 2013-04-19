@@ -11,9 +11,14 @@
     <string name="submit">Submit</string>
     <string name="post_succeeded">Posted!</string>
     <string name="post_failed">Post failed!</string>
-    
+
     <!-- Timeline Activity -->
     <string name="title_timeline">TimelineActivity</string>
     <string name="hello_world">Hello world!</string>
+
+    <!-- Action Bar -->
+    <string name="action_timeline">Timeline</string>
+    <string name="action_status">Status</string>
+    <string name="action_about">About</string>
 
 </resources>

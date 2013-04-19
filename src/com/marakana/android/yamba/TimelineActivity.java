@@ -1,19 +1,11 @@
 package com.marakana.android.yamba;
 
-import android.app.ListActivity;
 import android.os.Bundle;
-import android.view.Menu;
 
 import com.marakana.android.yamba.svc.YambaService;
 
 
-public class TimelineActivity extends ListActivity {
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.timeline, menu);
-        return true;
-    }
+public class TimelineActivity extends YambaActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

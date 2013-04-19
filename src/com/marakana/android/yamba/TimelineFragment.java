@@ -81,9 +81,6 @@ public class TimelineFragment extends ListFragment  implements LoaderCallbacks<C
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = super.onCreateView(inflater, container, savedInstanceState);
 
-        // Use this in the StatusActivity.
-        // v = inflater.inflate(R.layout.activity_status, container, false);
-
         // display the cursor in the list view
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(
                 getActivity(),
