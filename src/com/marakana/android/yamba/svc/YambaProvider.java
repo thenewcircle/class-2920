@@ -1,6 +1,7 @@
 package com.marakana.android.yamba.svc;
 
 import android.content.ContentProvider;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
@@ -76,7 +77,11 @@ public class YambaProvider extends ContentProvider {
     public Cursor query(Uri uri, String[] proj, String sel, String[] selArgs, String sort) {
         if (BuildConfig.DEBUG) { Log.d(TAG, "query: " + uri); }
 
+        long pk = -1;
         switch (uriMatcher.match(uri)) {
+            case TIMELINE_ITEM:
+                pk = ContentUris.parseId(uri);
+
             case TIMELINE_DIR:
                 break;
 
@@ -93,7 +98,11 @@ public class YambaProvider extends ContentProvider {
 
         qb.setTables(YambaDBHelper.TABLE_TIMELINE);
 
+        if (0 < pk) { qb.appendWhere(YambaDBHelper.COL_ID + " = " + pk); }
+
         Cursor c = qb.query(getDb(), proj, sel, selArgs, null, null, sort);
+
+        c.setNotificationUri(getContext().getContentResolver(), uri);
 
         return c;
     }
@@ -128,6 +137,9 @@ public class YambaProvider extends ContentProvider {
             db.setTransactionSuccessful();
         }
         finally { db.endTransaction(); }
+
+
+        if (0 < count) { getContext().getContentResolver().notifyChange(uri, null); }
 
         return count;
     }

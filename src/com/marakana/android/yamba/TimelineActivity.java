@@ -8,10 +8,17 @@ import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
+import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.Menu;
+import android.view.View;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
+
 
 public class TimelineActivity extends ListActivity implements LoaderCallbacks<Cursor> {
+    private static final String TAG = "TIMELINE";
+
     private static final int TIMELINE_LOADER = 64;
 
     private static final String[] PROJ = new String[] {
@@ -30,6 +37,24 @@ public class TimelineActivity extends ListActivity implements LoaderCallbacks<Cu
         R.id.timeline_status
     };
 
+    public class TimelineBinder implements SimpleCursorAdapter.ViewBinder {
+        @Override
+        public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+            if (R.id.timeline_timestamp != view.getId()) { return false; }
+
+            String s = "long ago";
+
+            long t = cursor.getLong(columnIndex);
+            if (0 < t) {
+                s = DateUtils.getRelativeTimeSpanString(t, System.currentTimeMillis(), 0).toString();
+            }
+
+            ((TextView) view).setText(s);
+
+            return true;
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.timeline, menu);
@@ -38,6 +63,7 @@ public class TimelineActivity extends ListActivity implements LoaderCallbacks<Cu
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Log.d(TAG, "create loader");
         return new CursorLoader(
                 this,
                 YambaContract.Timeline.URI,
@@ -49,11 +75,13 @@ public class TimelineActivity extends ListActivity implements LoaderCallbacks<Cu
 
     @Override
     public void onLoadFinished(Loader<Cursor> arg0, Cursor c) {
+        Log.d(TAG, "load finished");
         ((SimpleCursorAdapter) getListAdapter()).swapCursor(c);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> arg0) {
+        Log.d(TAG, "loader reset");
         ((SimpleCursorAdapter) getListAdapter()).swapCursor(null);
     }
 
@@ -69,6 +97,7 @@ public class TimelineActivity extends ListActivity implements LoaderCallbacks<Cu
                 FROM,
                 TO,
                 0);
+        adapter.setViewBinder(new TimelineBinder());
         setListAdapter(adapter);
 
         // get a cursor from the content provider:
