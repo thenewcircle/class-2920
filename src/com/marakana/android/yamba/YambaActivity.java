@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 public class YambaActivity extends Activity {
 
@@ -21,7 +22,6 @@ public class YambaActivity extends Activity {
         Intent i;
         switch (item.getItemId()) {
             case R.id.action_timeline:
-            case android.R.id.home:
                 i = new Intent(this, TimelineActivity.class);
                 i.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 startActivity(i);
@@ -33,6 +33,10 @@ public class YambaActivity extends Activity {
                 startActivity(i);
                 break;
 
+            case android.R.id.home:
+            case R.id.action_about:
+                Toast.makeText(this, R.string.about, Toast.LENGTH_LONG).show();
+                break;
 
             default:
                 return super.onOptionsItemSelected(item);
