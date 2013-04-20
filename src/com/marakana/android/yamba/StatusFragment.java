@@ -1,7 +1,5 @@
 package com.marakana.android.yamba;
 
-import com.marakana.android.yamba.svc.YambaService;
-
 import android.app.Fragment;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -18,13 +16,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 public class StatusFragment extends Fragment {
-    private static final String TAG = "STATUS";
-
     private static final int MAX_STATUS_LEN = 140;
     private static final int WARN_CHAR_CNT = 10;
     private static final int ERROR_CHAR_CNT = 0;
-
-
 
     private static class Poster extends AsyncTask<String, Void, Void> {
         private ContentResolver resolver;
@@ -35,7 +29,7 @@ public class StatusFragment extends Fragment {
         protected Void doInBackground(String... params) {
             ContentValues status = new ContentValues();
             status.put(YambaContract.Posts.Columns.STATUS, params[0]);
-            resolver.insert(YambaContract.Posts.URI, null);
+            resolver.insert(YambaContract.Posts.URI, status);
             return null;
         }
 
